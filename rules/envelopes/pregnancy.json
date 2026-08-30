@@ -1,0 +1,36 @@
+{
+  "envelope_id": "pregnancy",
+  "version": "1.1.0",
+  "display_name": "Obstetric pathway",
+  "applies_when": "pregnancy_status is 'yes' OR ('unknown' AND female AND age 12-55). Blueprint 5 item 7, 8.3, 9.5.",
+  "scoring_model": "suppressed",
+  "news2_permitted": false,
+  "news2_suppression_reason": "NEWS2 should not be used in women who are pregnant, because the physiological response to acute illness is modified - Royal College of Physicians [S1].",
+  "aggregate_score_suppressed": true,
+  "suppression_behaviour": {
+    "text": "The adult aggregate score is SUPPRESSED rather than adjusted. An obstetric pathway flag is raised, the card explains why the usual score is not shown, and the clock is floored.",
+    "card_copy": "Usual early-warning score not shown - NEWS2 is not valid in pregnancy [RCP NEWS2]",
+    "obstetric_pathway_flag": true,
+    "ttl_floor_minutes": 15,
+    "ttl_floor_source": "ASM",
+    "minimum_uncertainty_class": "THIN"
+  },
+  "design_rationale": {
+    "source": "ASM",
+    "text": "Blueprint 9.5 table B: 'We have no validated obstetric early-warning score to substitute, and inventing one would be exactly the fabrication this blueprint forbids. Refusing to score is the safe output.' The deterministic red-flag layer (L2) continues to fire in full - suppression removes the aggregate gradient, never the safety floor."
+  },
+  "unknown_pregnancy_handling": {
+    "text": "'Unknown' in a patient of reproductive age is treated as POSSIBLE, which suppresses the aggregate score and is itself an uncertainty driver (component U5, model applicability). Blueprint 8.3.",
+    "reproductive_age_min_years": 12,
+    "reproductive_age_max_years": 55,
+    "source": "ASM"
+  },
+  "critical_1_fields": [
+    "consciousness_acvpu",
+    "heart_rate",
+    "respiratory_rate",
+    "spo2",
+    "systolic_bp"
+  ],
+  "card_language": "obstetric"
+}

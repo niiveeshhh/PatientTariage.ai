@@ -1,0 +1,162 @@
+{
+  "core_id": "universal_safety_core",
+  "version": "1.3.0",
+  "description": "Blueprint 16.1 - the UNIVERSAL CORE. Identical everywhere, NOT configurable. A hospital profile may TIGHTEN a safety floor and may never loosen one. This asymmetry is checked at profile load; an invalid profile is rejected with a named violation rather than partially applied.",
+  "three_laws": [
+    "Law 1 - every triage decision expires.",
+    "Law 2 - unknown is not stable.",
+    "Law 3 - attention only ratchets up; every de-escalation is a human act."
+  ],
+  "protocol_floors_minutes": {
+    "_comment": "Universal reassessment intervals for WAITING patients. The single most important external anchor in the design (Blueprint 7.3). The engine may SHORTEN these; nobody may lengthen them. Level 1 is continuous - represented as 0.",
+    "source": "S17",
+    "citation_text": "Canadian Triage and Acuity Scale mandatory reassessment intervals for waiting patients: level 1 continuous, level 2 every 15 minutes, level 3 every 30, level 4 every 60, level 5 every 120.",
+    "1": 0,
+    "2": 15,
+    "3": 30,
+    "4": 60,
+    "5": 120
+  },
+  "max_wait_to_first_assessment_minutes": {
+    "_comment": "Blueprint 7.3 - used as the starvation-guard bound in constraint C2. If the optimiser cannot keep every patient inside their band's bound, it declares insufficiency rather than reordering.",
+    "source": "S17",
+    "1": 0,
+    "2": 15,
+    "3": 30,
+    "4": 60,
+    "5": 120
+  },
+  "special_floors_minutes": {
+    "blind_uncertainty": {"value": 10, "source": "ASM", "note": "Blueprint 7.4: tighter than any CTAS interval except continuous. A patient who cannot be assessed is structurally impossible to lose for more than ten minutes."},
+    "conflicted_uncertainty": {"value": 15, "source": "ASM", "note": "Blueprint 10.3: clock to the conflict floor."},
+    "undetermined_envelope": {"value": 10, "source": "ASM", "note": "Blueprint complexity 4 fallback: if the envelope cannot be determined, apply the most conservative thresholds across all envelopes and floor the clock at 10 minutes."},
+    "pregnancy_suppressed_score": {"value": 15, "source": "ASM"}
+  },
+  "conformal": {
+    "alpha_default": 0.10,
+    "alpha_floor": 0.02,
+    "alpha_ceiling": 0.20,
+    "source": "ASM",
+    "note": "Blueprint 7.4 and invariant I10: alpha may be LOWERED by a hospital (more conservative, wider sets, more escalation) and never raised above the ceiling.",
+    "insufficient_calibration_fallback": {
+      "min_calibration_n": 50,
+      "behaviour": "alpha defaults to its most conservative permitted value and the set defaults to {point estimate, one level more acute}",
+      "source": "ASM",
+      "note": "Blueprint complexity 9 fallback."
+    }
+  },
+  "uncertainty": {
+    "classes": ["CLEAR", "THIN", "CONFLICTED", "BLIND"],
+    "precedence": ["BLIND", "CONFLICTED", "THIN", "CLEAR"],
+    "completeness_thin_threshold": 0.60,
+    "source": "ASM",
+    "note": "Blueprint 7.4: weighted completeness <0.60 -> THIN; ANY critical-1 field absent -> THIN regardless of the score. The second clause is the important one - a single absent critical field cannot be outvoted by a high overall completeness score."
+  },
+  "worklist": {
+    "k_min": 1,
+    "k_max": 5,
+    "k_default": 3,
+    "source": "ASM",
+    "note": "Blueprint 7.4: K = clamp(round(capacity), 1, 5), default 3. Above 5 the list stops being a worklist and becomes an alarm stream (the documented Epic failure mode [S4])."
+  },
+  "queue": {
+    "hard_classes": ["R", "E", "B", "N"],
+    "hard_class_names": {
+      "R": "RED FLAG ACTIVE - a deterministic L2 rule is firing and unactioned",
+      "E": "EXPIRED - TTL elapsed and no reassessment recorded",
+      "B": "BLIND - uncertainty class BLIND, patient cannot be assessed",
+      "N": "NORMAL - everything else"
+    },
+    "harm_score_weights": {
+      "w_risk": 0.35,
+      "w_det": 0.20,
+      "w_time": 0.25,
+      "w_unc": 0.12,
+      "w_traj": 0.08,
+      "source": "ASM"
+    },
+    "time_pressure_gamma": 2.0,
+    "time_pressure_gamma_note": "Blueprint 11.2: gamma > 1. The exponent is the whole idea - priority rises SUPERLINEARLY as a clock approaches expiry, so a patient at 90% of their clock outranks one at 45% by much more than 2x. This is what converts 'time waiting' from a fairness term into a safety term.",
+    "hysteresis_band": 0.05,
+    "hysteresis_note": "Blueprint 7.4: 5% of harm score. Stops patients oscillating across a rank boundary when their scores are effectively tied.",
+    "rank_churn_ceiling_per_15min": 3,
+    "resource_tiebreak_epsilon": 0.03,
+    "resource_max_positions_down": 2,
+    "resource_note": "Constraint C3: resource state may break ties within an epsilon band and may inform routing. It may never move a patient down by more than k positions, never reduce an acted acuity, and never lengthen a clock."
+  },
+  "operating_modes": {
+    "NORMAL": {"objective": "expected_harm", "entry": "occupancy < 0.90"},
+    "STRAINED": {"objective": "expected_harm", "entry": "occupancy >= 0.90", "source": "S3", "note": "The mortality-associated ED occupancy threshold identified in a 103,196-visit study; above it, 10-day mortality odds rose for non-critical patients. Our mode change is anchored to a measured harm inflection rather than a round number."},
+    "SURGE": {"objective": "minimax_worst_case_harm", "entry": "arrival_rate >= 3x peak OR occupancy >= 1.30", "source": "R2/ASM"},
+    "MCI": {"objective": "out_of_protocol", "entry": "load >= 6x normal OR simultaneous critical arrivals exceeding resus capacity", "source": "ASM", "note": "The system declares itself out of protocol. Per-patient TTL mathematics is stated to be no longer meaningful at that scale."}
+  },
+  "mode_asymmetry": {
+    "auto_enter_more_vigilant": true,
+    "auto_exit_any_mode": false,
+    "note": "Blueprint 9.3 / 27: the system may auto-ENTER a more vigilant mode - consistent with the ratchet - but only a HUMAN may LEAVE one. Vigilance is free to increase itself and never free to decrease itself."
+  },
+  "degradation_ladder": ["L0_FULL", "L1_NO_MODEL", "L2_NO_HISTORY", "L3_NO_ENGINE", "L4_DARK"],
+  "degradation_note": "Blueprint 13.2: every rung is announced by a persistent banner, logged as a mode-change event, and produces clocks AT LEAST AS SHORT as the rung above it (invariant I5). The system degrades upward into vigilance, never downward into silence.",
+  "provenance_lattice": {
+    "order": ["Dev", "Obs", "Rec", "Att", "Pt", "RecProvisional", "Der", "Unk"],
+    "rules": {
+      "P1": "A recommendation whose reassuring evidence rests only on {Pt, Att, Unk} can never reach uncertainty class CLEAR.",
+      "P2": "Der values are never fed back as inputs. The model does not consume its own output.",
+      "P3": "RecProvisional may increase risk or shorten a clock. It may never decrease risk, lengthen a clock, or lower an acted acuity level."
+    },
+    "unknown_treated_as": "Pt",
+    "unknown_note": "Blueprint 8.5: provenance unknown is treated as Pt, the least trusted plausible class - never the most."
+  },
+  "half_lives_minutes": {
+    "_comment": "Blueprint 8.6. Beyond its half-life a value's weight decays toward UNKNOWN - which raises uncertainty and shortens the clock - and NEVER toward normal. Past 2x half-life the value becomes Absent and generates a re-measure task.",
+    "consciousness_acvpu": 15,
+    "gcs": 15,
+    "heart_rate": 20,
+    "respiratory_rate": 20,
+    "spo2": 20,
+    "systolic_bp": 30,
+    "diastolic_bp": 30,
+    "pain_score": 30,
+    "behavioural_state": 30,
+    "temperature_c": 60,
+    "clinician_gestalt_concern": 30,
+    "carer_concern": 30,
+    "work_of_breathing": 15,
+    "capillary_refill_seconds": 15,
+    "skin_perfusion": 15,
+    "ambulatory": 30,
+    "visible_haemorrhage": 15,
+    "blood_glucose_mgdl": 60,
+    "stated_chief_complaint": 60,
+    "known_conditions": 1440,
+    "prior_ed_visits_90d": 1440,
+    "baseline_bp": 43200,
+    "rate_control_medication": 43200,
+    "pregnancy_status": 129600,
+    "weight_kg": 129600,
+    "stated_onset_time": null,
+    "_onset_note": "The onset clock NEVER expires - it counts up, and it belongs to the disease rather than to the queue."
+  },
+  "prohibitions": [
+    "No diagnosis.",
+    "No treatment recommendation.",
+    "No disposition or discharge decision.",
+    "No autonomous routing.",
+    "No autonomous de-escalation of any kind.",
+    "No autonomous exit from a more vigilant operating mode.",
+    "No LLM in the clinical decision path.",
+    "No learning from clinician overrides.",
+    "No unbounded alerting.",
+    "No real patient data.",
+    "No claim of regulatory compliance.",
+    "No headline accuracy or AUC figure."
+  ],
+  "audit": {
+    "hash_algorithm": "sha256",
+    "write_before_display": true,
+    "note": "Blueprint 15.2: the audit record is committed DURABLY BEFORE the recommendation is displayed. The log can never lag the screen. If the audit store is unavailable, clinical decisions are REFUSED, not queued.",
+    "retention_days_floor": 365,
+    "retention_source": "S7",
+    "retention_note": "DPDP Rule 6 requires logs and personal data to be retained for one year unless another law requires otherwise. Configurable floor - may only be RAISED."
+  }
+}

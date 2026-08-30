@@ -1,0 +1,117 @@
+{
+  "envelope_id": "geriatric",
+  "version": "1.2.0",
+  "display_name": "Geriatric envelope",
+  "applies_when": "age >= 65 AND pregnancy_status is 'no'. Blueprint 9.5.",
+  "scoring_model": "news2_plus_geriatric_modifiers",
+  "news2_permitted": true,
+  "inherits_news2_from": "adult",
+  "high_risk_triage_vitals": {
+    "source": "S5",
+    "heart_rate_above": 100,
+    "respiratory_rate_above": 20,
+    "spo2_below": 92
+  },
+  "atypical_presentation_modifiers": {
+    "source": "S6",
+    "source_note": "SAEM/CDEM M4 geriatrics curriculum, 'Atypical presentations of critical illness in older adults'. These establish DIRECTION of effect, not magnitude.",
+    "implementation_decision": "Implemented as ESCALATE-ONLY QUALIFIERS that REMOVE REASSURANCE, never as numeric additions to the score. Blueprint 9.5 table B: 'The literature establishes the direction of these effects, not a magnitude. Implementing them as removals of reassurance is faithful to what is actually known. Assigning them point values would be inventing precision.'",
+    "modifiers": [
+      {
+        "modifier_id": "GER-MOD-AFEBRILE",
+        "name": "Absent fever does not reassure",
+        "condition": "temperature within normal range",
+        "effect": "removes_reassurance",
+        "removes": "temperature_normal_reassurance",
+        "text": "Fever and leucocytosis are often absent in acute infection because of immunosenescence. A normal temperature NEVER reassures in the geriatric envelope, at any freshness.",
+        "source": "S6"
+      },
+      {
+        "modifier_id": "GER-MOD-RATECONTROL",
+        "name": "Blunted tachycardia on rate-control medication",
+        "condition": "rate_control_medication is true OR unknown",
+        "effect": "removes_reassurance",
+        "removes": "heart_rate_normal_reassurance",
+        "text": "Beta-blockers and calcium-channel blockers mask the compensatory tachycardia that would otherwise signal deterioration. Unknown is treated as possible, per Blueprint 8.1: 'Unknown -> the geriatric envelope assumes tachycardia may be masked.'",
+        "source": "S6"
+      },
+      {
+        "modifier_id": "GER-MOD-RELHYPO",
+        "name": "Relative hypotension against baseline",
+        "condition": "baseline_bp present AND systolic_bp < baseline_systolic * (1 - relative_drop_fraction)",
+        "relative_drop_fraction": 0.20,
+        "relative_drop_fraction_source": "ASM",
+        "effect": "escalate",
+        "minimum_level": 2,
+        "text": "Baseline hypertension means an apparently acceptable BP can represent acute decompensation. A BP of 104/60 is unremarkable in isolation and alarming against a usual 150/90.",
+        "source": "S6",
+        "note": "The DIRECTION is from [S6]. The 20% threshold is ASM - our chosen operating point, exposed as configurable."
+      },
+      {
+        "modifier_id": "GER-MOD-DELIRIUM",
+        "name": "Delirium / new confusion as a presenting red flag",
+        "condition": "consciousness_acvpu == 'C' OR new_confusion reported against a documented oriented baseline",
+        "effect": "escalate",
+        "minimum_level": 2,
+        "text": "Sepsis from a urinary source often presents as altered mental status in older adults. New confusion is a presenting sign, not a soft finding.",
+        "source": "S6"
+      },
+      {
+        "modifier_id": "GER-MOD-FUNCTION",
+        "name": "New functional loss",
+        "condition": "ambulatory is false AND record indicates previously ambulatory, OR complaint indicates 'off legs' / new inability to walk",
+        "effect": "escalate",
+        "minimum_level": 3,
+        "text": "Older adults present with function loss rather than symptoms. A new inability to walk is a major event regardless of vitals.",
+        "source": "S6"
+      },
+      {
+        "modifier_id": "GER-MOD-ABDO",
+        "name": "Absent peritoneal signs do not exclude",
+        "condition": "abdominal complaint pathway active AND examination unremarkable",
+        "effect": "removes_reassurance",
+        "removes": "benign_abdominal_examination_reassurance",
+        "text": "Peritoneal signs are often absent in the geriatric acute abdomen.",
+        "source": "S6"
+      },
+      {
+        "modifier_id": "GER-MOD-SILENTMI",
+        "name": "STEMI may present without chest pain",
+        "condition": "cardiac risk features present without chest pain",
+        "effect": "removes_reassurance",
+        "removes": "absent_chest_pain_reassurance",
+        "text": "A STEMI may present with no chest pain at all, particularly in women and older adults.",
+        "source": "S6"
+      },
+      {
+        "modifier_id": "GER-MOD-FRAILTY",
+        "name": "Frailty modifier",
+        "condition": "frailty indicator present from a MATCHED record",
+        "effect": "escalate_only",
+        "text": "Two 78-year-olds with identical vitals and different frailty have materially different trajectories. Coarse frailty indicator, escalate-only, sourced from the record where identity is confirmed. Blueprint section 5 item 15 (SHOULD build).",
+        "source": "ASM"
+      }
+    ]
+  },
+  "sepsis_screening": {
+    "source": "S14",
+    "text": "qSOFA is not recommended as a single screening tool compared with SIRS, NEWS or MEWS (strong recommendation, moderate-quality evidence). Antimicrobials within 1 h for possible septic shock, within 3 h for possible sepsis without shock.",
+    "antimicrobial_window_minutes_shock": 60,
+    "antimicrobial_window_minutes_no_shock": 180
+  },
+  "critical_1_fields": [
+    "consciousness_acvpu",
+    "heart_rate",
+    "respiratory_rate",
+    "spo2",
+    "systolic_bp"
+  ],
+  "card_language": "geriatric",
+  "assumptions": [
+    {
+      "id": "ASM-GER-1",
+      "text": "The 20% relative-drop fraction for GER-MOD-RELHYPO is our chosen operating point. [S6] establishes that baseline-relative interpretation matters; it does not publish a percentage.",
+      "source": "ASM"
+    }
+  ]
+}

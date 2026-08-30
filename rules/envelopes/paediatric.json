@@ -1,0 +1,151 @@
+{
+  "envelope_id": "paediatric",
+  "version": "1.2.0",
+  "display_name": "Paediatric envelope",
+  "applies_when": "age < 16 years for scoring (< 18 years for consent and pathway). Blueprint 9.5: NEWS2 must not be used in children aged <16 [S1].",
+  "scoring_model": "esi_v5_age_banded",
+  "news2_permitted": false,
+  "news2_suppression_reason": "NEWS2 should not be used in children (ie aged <16 years) - Royal College of Physicians [S1]. Blueprint 2.2 identifies applying it anyway as the single highest-value safety fix in Round 2.",
+  "age_bands": [
+    {
+      "band_id": "paed_neonate",
+      "label": "neonate <28 days",
+      "min_days": 0,
+      "max_days": 27,
+      "hr_high": 190,
+      "rr_high": 60,
+      "source": "S5",
+      "source_note": "ESI Handbook 5th edition, decision point D5: <1 mo HR >190, RR >60."
+    },
+    {
+      "band_id": "paed_infant",
+      "label": "1-12 months",
+      "min_days": 28,
+      "max_days": 364,
+      "hr_high": 180,
+      "rr_high": 55,
+      "source": "S5",
+      "source_note": "ESI v5 D5: 1-12 mo HR >180, RR >55."
+    },
+    {
+      "band_id": "paed_toddler",
+      "label": "1-3 years",
+      "min_days": 365,
+      "max_days": 1460,
+      "hr_high": 140,
+      "rr_high": 40,
+      "source": "S5",
+      "source_note": "ESI v5 D5: 1-3 y HR >140, RR >40."
+    },
+    {
+      "band_id": "paed_preschool",
+      "label": "3-5 years",
+      "min_days": 1461,
+      "max_days": 2190,
+      "hr_high": 120,
+      "rr_high": 35,
+      "source": "S5",
+      "source_note": "ESI v5 D5: 3-5 y HR >120, RR >35."
+    },
+    {
+      "band_id": "paed_school",
+      "label": "5-12 years",
+      "min_days": 2191,
+      "max_days": 4744,
+      "hr_high": 120,
+      "rr_high": 30,
+      "source": "S5",
+      "source_note": "ESI v5 D5: 5-12 y HR >120, RR >30."
+    },
+    {
+      "band_id": "paed_adolescent",
+      "label": "12-18 years",
+      "min_days": 4745,
+      "max_days": 6574,
+      "hr_high": 100,
+      "rr_high": 20,
+      "source": "S5",
+      "source_note": "ESI v5 D5: 12-18 y HR >100, RR >20. Blueprint 9.5 table B: 16-18 is DUAL-SCORED under this envelope and the adult envelope, acting on the worse result, because NEWS2 becomes valid at 16 [S1] while ESI's paediatric band runs to 18 [S5]."
+    }
+  ],
+  "fever_rules": [
+    {
+      "rule_id": "PAED-FEVER-NEONATE",
+      "max_age_days": 27,
+      "temperature_above_c": 38.0,
+      "minimum_level": 2,
+      "source": "S5",
+      "text": "Fever >38 C in an infant under 28 days is at minimum a level-2 situation, regardless of how well the child looks.",
+      "note": "Blueprint scenario S-06 exists specifically to assert a benign appearance cannot suppress this rule."
+    },
+    {
+      "rule_id": "PAED-FEVER-INFANT",
+      "min_age_days": 28,
+      "max_age_days": 91,
+      "temperature_above_c": 38.0,
+      "minimum_level": 2,
+      "source": "S5",
+      "text": "1-3 months: consider level 2 if temperature >38 C."
+    },
+    {
+      "rule_id": "PAED-FEVER-CHILD",
+      "min_age_days": 92,
+      "temperature_above_c": 39.0,
+      "temperature_below_c": 36.0,
+      "minimum_level": 3,
+      "escalate_to_level_2_if": ["immunisations_incomplete", "no_obvious_source"],
+      "source": "S5",
+      "text": ">=3 months: consider level 2 or 3 if >39 C or <36 C, if immunisations are incomplete, or if there is no obvious source."
+    }
+  ],
+  "non_vital_discriminators": {
+    "source": "S11",
+    "source_note": "Mirrors the UK national paediatric early warning system scored parameter set (RCPCH / NHS England).",
+    "parameters": [
+      {"field": "work_of_breathing", "scored": true, "escalating_values": ["moderate", "severe"], "critical_1": true},
+      {"field": "capillary_refill_seconds", "scored": true, "escalating_above": 2.0, "critical_1": true},
+      {"field": "skin_perfusion", "scored": true, "escalating_values": ["mottled", "cyanosed"]},
+      {"field": "behavioural_state", "scored": true, "escalating_values": ["inconsolable", "lethargic", "unresponsive"]},
+      {"field": "hydration", "scored": true, "escalating_values": ["reduced", "poor"]}
+    ]
+  },
+  "carer_concern_trigger": {
+    "rule_id": "PAED-CARER-CONCERN",
+    "field": "carer_concern",
+    "escalate_only": true,
+    "minimum_level": 3,
+    "source": "S11",
+    "text": "Parent or carer concern escalates a child's care regardless of other assessments. Imported directly from UK national PEWS practice.",
+    "note": "Blueprint 12.2 T3: escalate-only. It can raise attention and can never lower anything."
+  },
+  "critical_1_fields": [
+    "consciousness_acvpu",
+    "heart_rate",
+    "respiratory_rate",
+    "spo2",
+    "work_of_breathing",
+    "capillary_refill_seconds"
+  ],
+  "not_applicable_fields": {
+    "systolic_bp": {
+      "applies_when_age_days_below": 1460,
+      "reason": "not_applicable",
+      "substitute": "capillary_refill_seconds",
+      "source": "S11",
+      "note": "Blueprint 8.2 and scenario S-04: in small children capillary refill substitutes where BP is unreliable or unobtainable. Absence of BP here is 'not applicable' and carries no completeness penalty - the only reason that does."
+    }
+  },
+  "card_language": "paediatric",
+  "assumptions": [
+    {
+      "id": "ASM-PAED-1",
+      "text": "Estimated age within +/-2 years of a band boundary triggers dual-envelope evaluation, acting on the more acute result. Blueprint 9.5 table B - our rule, not anyone's guideline. Rationale: an estimated 'about 3' that is actually 2 crosses a threshold where HR >140 becomes HR >180.",
+      "source": "ASM"
+    },
+    {
+      "id": "ASM-PAED-2",
+      "text": "Age 16-18 is dual-scored under this envelope and the adult envelope, acting on the worse result, because the two authorities disagree about where childhood ends. Blueprint 9.5 table B.",
+      "source": "ASM"
+    }
+  ]
+}

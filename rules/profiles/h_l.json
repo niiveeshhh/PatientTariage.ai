@@ -1,0 +1,97 @@
+{
+  "profile_id": "H-L",
+  "version": "1.2.0",
+  "display_name": "Tertiary public teaching hospital",
+  "archetype": "tertiary",
+  "_comment": "Blueprint 16.2. Safety floors identical in all three - verified by the cross-profile parity test.",
+  "volume": {
+    "ed_daily_volume": 500,
+    "mean_arrival_rate_per_hour": 20.8,
+    "peak_arrival_rate_per_hour": 38,
+    "offpeak_arrival_rate_per_hour": 12.1,
+    "surge_arrival_rate_per_hour": 112,
+    "source": "R2 for daily volume (brief states 100-500+); peak factor 1.8x and off-peak 0.58x are ASM (Blueprint 7.1)."
+  },
+  "staffing": {
+    "triage_nurses_on_shift": 3,
+    "emergency_physicians_on_shift": 6,
+    "relooks_per_staff_hour": 10,
+    "relooks_source": "ASM",
+    "relooks_note": "Blueprint 7.3: assumes a re-look takes ~3 minutes and a triage nurse can devote roughly half their time to reassessment. This single number derives K and therefore the entire attention budget, so it is exposed as configurable and its sensitivity is reported (Blueprint 23.3).",
+    "minimum_staffing_assumption": 2,
+    "unknown_staffing_note": "Blueprint complexity 12 fallback: unknown staffing -> assume the profile's declared minimum, which produces the most conservative (smallest) K and the earliest deficit warning."
+  },
+  "capacity": {
+    "treatment_bays": 40,
+    "resuscitation_bays": 4,
+    "inpatient_beds_free_fraction": 0.05,
+    "boarding_load_fraction": 0.12,
+    "boarding_note": "Admitted patients occupying ED capacity. Enters as a CAPACITY REDUCER, never as a priority reducer (constraint C3)."
+  },
+  "capability_inventory": {
+    "specialties_24x7": [
+      "medicine",
+      "surgery",
+      "orthopaedics",
+      "paediatrics",
+      "obstetrics",
+      "neurology",
+      "cardiology"
+    ],
+    "imaging": {
+      "xray": "24x7",
+      "ct": "24x7",
+      "mri": "daytime",
+      "ultrasound": "24x7"
+    },
+    "lab_turnaround_minutes_routine": 45,
+    "note": "Blueprint complexity 11: routing recommendations are FILTERED against this inventory before display. An unavailable pathway becomes a TRANSFER-CONSIDERATION FLAG, not a silent omission. Unknown capability -> treat as unavailable and surface the transfer flag. Assume less, not more."
+  },
+  "acuity_vocabulary": {
+    "style": "five_level",
+    "levels": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "labels": {
+      "1": "Level 1",
+      "2": "Level 2",
+      "3": "Level 3",
+      "4": "Level 4",
+      "5": "Level 5"
+    },
+    "source": "S17/S5"
+  },
+  "routing_destinations": [
+    "resus",
+    "majors",
+    "minors",
+    "paediatrics",
+    "obstetric",
+    "fast_track"
+  ],
+  "protocol_floor_overrides_minutes": {},
+  "protocol_floor_override_note": "TIGHTEN ONLY. A hospital may require faster reassessment than the universal floor and never slower. Rejected at profile load with a named violation otherwise.",
+  "conformal_alpha": 0.1,
+  "conformal_alpha_note": "LOWER ONLY (more conservative). Bounded by the universal ceiling of 0.20.",
+  "surge_thresholds": {
+    "strained_occupancy": 0.9,
+    "surge_occupancy": 1.3,
+    "surge_arrival_multiplier": 3.0,
+    "mci_load_multiplier": 6.0
+  },
+  "integration_tier": "L3",
+  "retention_days": 365,
+  "patient_mix": {
+    "ambulance_arrival_fraction": 0.14,
+    "note": "Blueprint 7.2. Pre-hospital transport penetration is lower in district settings."
+  },
+  "expected_k": 3,
+  "behaviour_difference_that_matters": "Deep worklist, full routing, resource-aware tie-breaking.",
+  "language_set": [
+    "en"
+  ]
+}

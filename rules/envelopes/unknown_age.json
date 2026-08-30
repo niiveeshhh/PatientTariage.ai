@@ -1,0 +1,34 @@
+{
+  "envelope_id": "unknown_age",
+  "version": "1.1.0",
+  "display_name": "Unknown age - conservative envelope",
+  "applies_when": "age is absent, or age_source is 'estimated' with no usable value. Blueprint 8.1, 9.5 table B.",
+  "scoring_model": "union_of_adjacent_envelopes",
+  "news2_permitted": false,
+  "news2_suppression_reason": "Age cannot be established, so the >=16 validity condition for NEWS2 [S1] cannot be satisfied. Defaulting to adult is the failure mode this envelope exists to prevent.",
+  "behaviour": {
+    "text": "The UNION of adjacent plausible envelopes' escalation criteria is applied. Uncertainty class is forced to BLIND. The clock is floored at 10 minutes. The card states 'age unknown - conservative envelope'.",
+    "union_envelopes": ["paediatric", "adult", "geriatric"],
+    "union_rule": "A patient escalates if ANY member envelope's criteria would escalate them. Escalations are unioned; reassurances are not.",
+    "forced_uncertainty_class": "BLIND",
+    "ttl_floor_minutes": 10,
+    "ttl_floor_source": "ASM",
+    "card_copy": "Age unknown - conservative envelope, union of paediatric/adult/geriatric escalations"
+  },
+  "design_rationale": {
+    "source": "ASM",
+    "text": "Blueprint 9.5 table B: 'The failure mode to avoid is defaulting to adult, which is what almost every system does implicitly.' Blueprint 8.1 names age as 'the single most consequential field in the schema'. Blueprint complexity 3 fallback: 'Unknown or contested age -> the union of adjacent envelopes' escalations is applied and uncertainty is BLIND.'"
+  },
+  "estimated_age_near_boundary": {
+    "text": "If age is flagged estimated and lies within +/-2 years of a band boundary, BOTH adjacent envelopes are evaluated and the more acute result is acted on. Blueprint 9.5 table B.",
+    "boundary_tolerance_years": 2,
+    "source": "ASM"
+  },
+  "critical_1_fields": [
+    "consciousness_acvpu",
+    "heart_rate",
+    "respiratory_rate",
+    "spo2"
+  ],
+  "card_language": "conservative"
+}

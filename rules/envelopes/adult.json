@@ -1,0 +1,104 @@
+{
+  "envelope_id": "adult",
+  "version": "1.2.0",
+  "display_name": "Adult envelope",
+  "applies_when": "age 16-64 inclusive AND pregnancy_status is 'no'. Blueprint 9.5.",
+  "scoring_model": "news2",
+  "news2_permitted": true,
+  "news2_exclusions": {
+    "age_below": 16,
+    "pregnancy": ["yes", "unknown"],
+    "caveat_conditions": ["spinal_cord_injury"],
+    "source": "S1",
+    "text": "NEWS2 should not be used in children (ie aged <16 years) or women who are pregnant, because the physiological response to acute illness is modified; it may be unreliable in spinal-cord injury."
+  },
+  "news2_scoring": {
+    "source": "S1",
+    "source_note": "National Early Warning Score 2, Royal College of Physicians. Bands reproduced from the published table.",
+    "parameters": {
+      "respiratory_rate": [
+        {"score": 3, "max": 8},
+        {"score": 1, "min": 9, "max": 11},
+        {"score": 0, "min": 12, "max": 20},
+        {"score": 2, "min": 21, "max": 24},
+        {"score": 3, "min": 25}
+      ],
+      "spo2_scale1": [
+        {"score": 3, "max": 91},
+        {"score": 2, "min": 92, "max": 93},
+        {"score": 1, "min": 94, "max": 95},
+        {"score": 0, "min": 96}
+      ],
+      "spo2_scale2": [
+        {"score": 3, "max": 83},
+        {"score": 2, "min": 84, "max": 85},
+        {"score": 1, "min": 86, "max": 87},
+        {"score": 0, "min": 88, "max": 92, "on_air": true},
+        {"score": 1, "min": 93, "max": 94, "on_oxygen": true},
+        {"score": 2, "min": 95, "max": 96, "on_oxygen": true},
+        {"score": 3, "min": 97, "on_oxygen": true}
+      ],
+      "supplemental_oxygen": [
+        {"score": 0, "value": false},
+        {"score": 2, "value": true}
+      ],
+      "systolic_bp": [
+        {"score": 3, "max": 90},
+        {"score": 2, "min": 91, "max": 100},
+        {"score": 1, "min": 101, "max": 110},
+        {"score": 0, "min": 111, "max": 219},
+        {"score": 3, "min": 220}
+      ],
+      "heart_rate": [
+        {"score": 3, "max": 40},
+        {"score": 1, "min": 41, "max": 50},
+        {"score": 0, "min": 51, "max": 90},
+        {"score": 1, "min": 91, "max": 110},
+        {"score": 2, "min": 111, "max": 130},
+        {"score": 3, "min": 131}
+      ],
+      "consciousness_acvpu": [
+        {"score": 0, "value": "A"},
+        {"score": 3, "value": "C"},
+        {"score": 3, "value": "V"},
+        {"score": 3, "value": "P"},
+        {"score": 3, "value": "U"}
+      ],
+      "temperature": [
+        {"score": 3, "max": 35.0},
+        {"score": 1, "min": 35.1, "max": 36.0},
+        {"score": 0, "min": 36.1, "max": 38.0},
+        {"score": 1, "min": 38.1, "max": 39.0},
+        {"score": 2, "min": 39.1}
+      ]
+    },
+    "escalation_bands": [
+      {"band": "low", "min_total": 0, "max_total": 4, "response": "ward-based response", "monitoring_minutes": 720},
+      {"band": "low_medium_single_param", "trigger": "any_single_parameter_score_3", "response": "urgent review by a clinician", "monitoring_minutes": 60},
+      {"band": "medium", "min_total": 5, "max_total": 6, "response": "urgent review", "monitoring_minutes": 60},
+      {"band": "high", "min_total": 7, "response": "emergency assessment, continuous monitoring", "monitoring_minutes": 0}
+    ]
+  },
+  "high_risk_triage_vitals": {
+    "source": "S5",
+    "source_note": "ESI Handbook 5th edition adult high-risk vitals at triage.",
+    "heart_rate_above": 100,
+    "respiratory_rate_above": 20,
+    "spo2_below": 92
+  },
+  "critical_1_fields": [
+    "consciousness_acvpu",
+    "heart_rate",
+    "respiratory_rate",
+    "spo2",
+    "systolic_bp"
+  ],
+  "card_language": "adult",
+  "assumptions": [
+    {
+      "id": "ASM-ADULT-1",
+      "text": "Spinal-cord injury is flagged as an envelope caveat that WIDENS the conformal set rather than altering thresholds. RCP says NEWS2 'may be unreliable' here; the honest translation of 'may be unreliable' is more uncertainty, not a different number. Blueprint 9.5 table B.",
+      "source": "ASM"
+    }
+  ]
+}

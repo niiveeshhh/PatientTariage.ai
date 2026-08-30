@@ -1,0 +1,488 @@
+{
+  "ruleset_id": "hard_red_flags",
+  "version": "1.4.0",
+  "description": "Layer L2 - deterministic, guideline-derived hard safety rules. Blueprint 9.2: 'No learned component may veto this layer.' Blueprint 13.1 invariant I4: any firing hard red flag places the patient in queue class R regardless of every model output, confidence value and uncertainty class.",
+  "governance": "This file is a clinically-owned artefact reviewed as a document, not read as code. Owner A in the Blueprint 25 role split holds the citation column. Every rule carries a source: a row in rules/citations/sources.json, or the tag ASM.",
+  "authority": {
+    "may_be_vetoed_by_model": false,
+    "may_be_vetoed_by_uncertainty": false,
+    "may_be_vetoed_by_confidence": false,
+    "places_patient_in_queue_class": "R",
+    "sets_floor_on_acted_level": true
+  },
+  "rules": [
+    {
+      "rule_id": "RF-A01",
+      "name": "Unresponsive or pain-responsive only",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "consciousness_acvpu", "op": "in", "value": ["P", "U"]},
+      "floor_level": 1,
+      "source": "S1",
+      "citation_text": "ACVPU below Voice scores 3 in NEWS2 and mandates emergency assessment; a single parameter scoring 3 triggers urgent clinician review.",
+      "reason_string": "Unresponsive - level 1",
+      "action_verb": "Move to resuscitation now"
+    },
+    {
+      "rule_id": "RF-A02",
+      "name": "Voice-responsive or new confusion",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "consciousness_acvpu", "op": "in", "value": ["C", "V"]},
+      "floor_level": 2,
+      "source": "S1",
+      "citation_text": "New confusion is scored in NEWS2 (ACVPU) and is a presenting sign of sepsis in older adults.",
+      "reason_string": "Not fully alert - level 2 not 3",
+      "action_verb": "Move to monitored area"
+    },
+    {
+      "rule_id": "RF-A03",
+      "name": "Hypoglycaemia",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "blood_glucose_mgdl", "op": "<", "value": 70},
+      "floor_level": 2,
+      "escalate_to_level_1_if": {"field": "consciousness_acvpu", "op": "in", "value": ["C", "V", "P", "U"]},
+      "source": "S5",
+      "citation_text": "Hypoglycaemia is a fully reversible cause of altered consciousness and a hard red flag - one of the cheapest, highest-value rules in the set (Blueprint 8.3).",
+      "reason_string": "Glucose low - reversible cause",
+      "action_verb": "Treat hypoglycaemia now"
+    },
+    {
+      "rule_id": "RF-A04",
+      "name": "Adult hypoxaemia",
+      "envelopes": ["adult", "geriatric", "pregnancy"],
+      "condition": {"field": "spo2", "op": "<", "value": 92, "guard": {"field": "on_oxygen", "op": "==", "value": false}},
+      "floor_level": 2,
+      "escalate_to_level_1_if": {"field": "spo2", "op": "<", "value": 88},
+      "source": "S5",
+      "citation_text": "ESI Handbook 5th edition adult high-risk triage vital: SpO2 <92%.",
+      "reason_string": "SpO2 below 92%",
+      "action_verb": "Give oxygen, monitored area"
+    },
+    {
+      "rule_id": "RF-A05",
+      "name": "Adult severe tachypnoea",
+      "envelopes": ["adult", "geriatric", "pregnancy"],
+      "condition": {"field": "respiratory_rate", "op": ">=", "value": 25},
+      "floor_level": 2,
+      "source": "S1",
+      "citation_text": "NEWS2 scores respiratory rate >=25 as 3, a single-parameter score of 3 triggering urgent clinician review.",
+      "reason_string": "RR 25 or above",
+      "action_verb": "Move to monitored area"
+    },
+    {
+      "rule_id": "RF-A06",
+      "name": "Adult bradypnoea",
+      "envelopes": ["adult", "geriatric", "pregnancy"],
+      "condition": {"field": "respiratory_rate", "op": "<=", "value": 8},
+      "floor_level": 1,
+      "source": "S1",
+      "citation_text": "NEWS2 scores respiratory rate <=8 as 3.",
+      "reason_string": "RR 8 or below",
+      "action_verb": "Move to resuscitation now"
+    },
+    {
+      "rule_id": "RF-A07",
+      "name": "Adult hypotension",
+      "envelopes": ["adult", "geriatric", "pregnancy"],
+      "condition": {"field": "systolic_bp", "op": "<=", "value": 90},
+      "floor_level": 1,
+      "source": "S1",
+      "citation_text": "NEWS2 scores systolic BP <=90 as 3.",
+      "reason_string": "Systolic BP 90 or below",
+      "action_verb": "Move to resuscitation now"
+    },
+    {
+      "rule_id": "RF-A08",
+      "name": "Adult severe hypertension",
+      "envelopes": ["adult", "geriatric", "pregnancy"],
+      "condition": {"field": "systolic_bp", "op": ">=", "value": 220},
+      "floor_level": 2,
+      "source": "S1",
+      "citation_text": "NEWS2 scores systolic BP >=220 as 3.",
+      "reason_string": "Systolic BP 220 or above",
+      "action_verb": "Move to monitored area"
+    },
+    {
+      "rule_id": "RF-A09",
+      "name": "Adult severe tachycardia",
+      "envelopes": ["adult", "geriatric", "pregnancy"],
+      "condition": {"field": "heart_rate", "op": ">=", "value": 131},
+      "floor_level": 2,
+      "source": "S1",
+      "citation_text": "NEWS2 scores pulse >=131 as 3.",
+      "reason_string": "HR 131 or above",
+      "action_verb": "Move to monitored area"
+    },
+    {
+      "rule_id": "RF-A10",
+      "name": "Adult severe bradycardia",
+      "envelopes": ["adult", "geriatric", "pregnancy"],
+      "condition": {"field": "heart_rate", "op": "<=", "value": 40},
+      "floor_level": 2,
+      "source": "S1",
+      "citation_text": "NEWS2 scores pulse <=40 as 3.",
+      "reason_string": "HR 40 or below",
+      "action_verb": "Move to monitored area"
+    },
+    {
+      "rule_id": "RF-A11",
+      "name": "Hypothermia",
+      "envelopes": ["adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "temperature_c", "op": "<=", "value": 35.0},
+      "floor_level": 2,
+      "source": "S1",
+      "citation_text": "NEWS2 scores temperature <=35.0 C as 3.",
+      "reason_string": "Temperature 35 C or below",
+      "action_verb": "Active warming, monitored area"
+    },
+    {
+      "rule_id": "RF-A12",
+      "name": "NEWS2 aggregate at emergency-assessment threshold",
+      "envelopes": ["adult", "geriatric"],
+      "condition": {"field": "news2_total", "op": ">=", "value": 7},
+      "floor_level": 2,
+      "source": "S1",
+      "citation_text": "NEWS2 aggregate >=7 is the high band: emergency assessment, continuous monitoring.",
+      "reason_string": "NEWS2 7 or above",
+      "action_verb": "Emergency assessment now"
+    },
+    {
+      "rule_id": "RF-A13",
+      "name": "NEWS2 single parameter scoring 3",
+      "envelopes": ["adult", "geriatric"],
+      "condition": {"field": "news2_max_single", "op": ">=", "value": 3},
+      "floor_level": 3,
+      "source": "S1",
+      "citation_text": "A score of 3 in any single NEWS2 parameter triggers urgent review by a clinician.",
+      "reason_string": "Single NEWS2 parameter at 3",
+      "action_verb": "Urgent clinician review"
+    },
+    {
+      "rule_id": "RF-A14",
+      "name": "GCS depressed",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "gcs", "op": "<=", "value": 13},
+      "floor_level": 2,
+      "escalate_to_level_1_if": {"field": "gcs", "op": "<=", "value": 8},
+      "source": "S5",
+      "citation_text": "Depressed level of consciousness is an ESI decision-point-B high-risk situation.",
+      "reason_string": "GCS 13 or below",
+      "action_verb": "Airway assessment, monitored area"
+    },
+    {
+      "rule_id": "RF-A15",
+      "name": "Visible major haemorrhage",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "visible_haemorrhage", "op": "==", "value": true},
+      "floor_level": 1,
+      "source": "S5",
+      "citation_text": "Uncontrolled haemorrhage is an ESI level-1 immediate life-saving intervention criterion.",
+      "reason_string": "Active major bleeding",
+      "action_verb": "Control bleeding now"
+    },
+    {
+      "rule_id": "RF-A16",
+      "name": "Major mechanism of injury",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "major_mechanism", "op": "==", "value": true},
+      "floor_level": 2,
+      "source": "S5",
+      "citation_text": "High-risk mechanism is an ESI decision-point-B high-risk situation. Blueprint 27: a full trauma pathway is out of scope; mechanism-of-injury triggers are included in the red-flag layer.",
+      "reason_string": "High-risk injury mechanism",
+      "action_verb": "Trauma assessment"
+    },
+    {
+      "rule_id": "RF-A17",
+      "name": "Cyanosis or mottling",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "skin_perfusion", "op": "in", "value": ["cyanosed", "mottled"]},
+      "floor_level": 2,
+      "escalate_to_level_1_if": {"field": "skin_perfusion", "op": "==", "value": "cyanosed"},
+      "source": "S11",
+      "citation_text": "Perfusion is a scored parameter in the UK national paediatric early warning system; mottling and cyanosis are late signs whose appearance is a step change, not a gradient.",
+      "reason_string": "Perfusion abnormal",
+      "action_verb": "Immediate assessment"
+    },
+    {
+      "rule_id": "RF-P01",
+      "name": "Paediatric heart rate above age band",
+      "envelopes": ["paediatric"],
+      "condition": {"field": "heart_rate", "op": ">", "value": "@band.hr_high"},
+      "floor_level": 2,
+      "source": "S5",
+      "citation_text": "ESI Handbook 5th edition decision point D5 paediatric high-risk heart rate by age band.",
+      "reason_string": "HR above band threshold",
+      "action_verb": "Paediatric assessment now"
+    },
+    {
+      "rule_id": "RF-P02",
+      "name": "Paediatric respiratory rate above age band",
+      "envelopes": ["paediatric"],
+      "condition": {"field": "respiratory_rate", "op": ">", "value": "@band.rr_high"},
+      "floor_level": 2,
+      "source": "S5",
+      "citation_text": "ESI Handbook 5th edition decision point D5 paediatric high-risk respiratory rate by age band.",
+      "reason_string": "RR above band threshold",
+      "action_verb": "Paediatric assessment now"
+    },
+    {
+      "rule_id": "RF-P03",
+      "name": "Paediatric hypoxaemia",
+      "envelopes": ["paediatric"],
+      "condition": {"field": "spo2", "op": "<", "value": 92, "guard": {"field": "on_oxygen", "op": "==", "value": false}},
+      "floor_level": 2,
+      "escalate_to_level_1_if": {"field": "spo2", "op": "<", "value": 88},
+      "source": "S5",
+      "citation_text": "ESI Handbook 5th edition SpO2 <92% high-risk vital.",
+      "reason_string": "SpO2 below 92%",
+      "action_verb": "Give oxygen, paediatric area"
+    },
+    {
+      "rule_id": "RF-P04",
+      "name": "Neonatal fever",
+      "envelopes": ["paediatric"],
+      "condition": {"all": [
+        {"field": "age_days", "op": "<=", "value": 27},
+        {"field": "temperature_c", "op": ">", "value": 38.0}
+      ]},
+      "floor_level": 2,
+      "source": "S5",
+      "citation_text": "ESI Handbook 5th edition: fever >38 C in an infant under 28 days is at minimum a level-2 situation.",
+      "reason_string": "Fever under 28 days old",
+      "action_verb": "Full septic screen now",
+      "adversarial_note": "Blueprint scenario S-06: asserts a benign presentation cannot suppress an age-specific rule."
+    },
+    {
+      "rule_id": "RF-P05",
+      "name": "Infant fever 1-3 months",
+      "envelopes": ["paediatric"],
+      "condition": {"all": [
+        {"field": "age_days", "op": ">=", "value": 28},
+        {"field": "age_days", "op": "<=", "value": 91},
+        {"field": "temperature_c", "op": ">", "value": 38.0}
+      ]},
+      "floor_level": 2,
+      "source": "S5",
+      "citation_text": "ESI Handbook 5th edition: 1-3 months, consider level 2 if >38 C.",
+      "reason_string": "Fever, infant under 3 months",
+      "action_verb": "Paediatric assessment now"
+    },
+    {
+      "rule_id": "RF-P06",
+      "name": "Child high or low temperature",
+      "envelopes": ["paediatric"],
+      "condition": {"all": [
+        {"field": "age_days", "op": ">=", "value": 92},
+        {"any": [
+          {"field": "temperature_c", "op": ">", "value": 39.0},
+          {"field": "temperature_c", "op": "<", "value": 36.0}
+        ]}
+      ]},
+      "floor_level": 3,
+      "escalate_to_level_2_if": {"any": [
+        {"field": "immunisations_incomplete", "op": "==", "value": true},
+        {"field": "no_obvious_source", "op": "==", "value": true}
+      ]},
+      "source": "S5",
+      "citation_text": "ESI Handbook 5th edition: >=3 months, consider level 2 or 3 if >39 C or <36 C, if immunisations are incomplete, or if there is no obvious source.",
+      "reason_string": "Temperature outside child range",
+      "action_verb": "Paediatric assessment"
+    },
+    {
+      "rule_id": "RF-P07",
+      "name": "Severe work of breathing",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "work_of_breathing", "op": "==", "value": "severe"},
+      "floor_level": 1,
+      "source": "S11",
+      "citation_text": "Extent of respiratory distress is a scored parameter in the UK national paediatric early warning system; severe work of breathing is the earliest visible sign of paediatric decompensation.",
+      "reason_string": "Severe work of breathing",
+      "action_verb": "Airway/breathing support now"
+    },
+    {
+      "rule_id": "RF-P08",
+      "name": "Moderate work of breathing",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"field": "work_of_breathing", "op": "==", "value": "moderate"},
+      "floor_level": 2,
+      "source": "S11",
+      "citation_text": "Extent of respiratory distress is a scored parameter in the UK national paediatric early warning system.",
+      "reason_string": "Moderate work of breathing",
+      "action_verb": "Move to monitored area"
+    },
+    {
+      "rule_id": "RF-P09",
+      "name": "Prolonged capillary refill",
+      "envelopes": ["paediatric"],
+      "condition": {"field": "capillary_refill_seconds", "op": ">=", "value": 3.0},
+      "floor_level": 2,
+      "source": "S11",
+      "citation_text": "Capillary refill is a scored parameter in national PEWS; a proxy for perfusion where BP is unreliable or unobtainable in small children.",
+      "reason_string": "Capillary refill 3 s or more",
+      "action_verb": "Paediatric assessment now"
+    },
+    {
+      "rule_id": "RF-P10",
+      "name": "Parent or carer concern",
+      "envelopes": ["paediatric"],
+      "condition": {"field": "carer_concern", "op": "==", "value": true},
+      "floor_level": 3,
+      "source": "S11",
+      "citation_text": "Parent or carer concern escalates a child's care regardless of other assessments - UK national paediatric early warning system.",
+      "reason_string": "Carer concerned",
+      "action_verb": "Reassess with the parent",
+      "escalate_only": true,
+      "adversarial_note": "Blueprint scenario S-07 (the age-band flip): this fires regardless of the rest."
+    },
+    {
+      "rule_id": "RF-G01",
+      "name": "Geriatric relative hypotension against baseline",
+      "envelopes": ["geriatric"],
+      "condition": {"field": "relative_bp_drop_fraction", "op": ">=", "value": 0.20},
+      "floor_level": 2,
+      "source": "S6",
+      "citation_text": "Baseline hypertension means an apparently acceptable BP can represent acute decompensation (SAEM/CDEM atypical presentations). The 20% fraction is ASM.",
+      "reason_string": "BP well below her baseline",
+      "action_verb": "Move to monitored area, repeat BP",
+      "adversarial_note": "Blueprint scenario S-11, the opening demo case."
+    },
+    {
+      "rule_id": "RF-G02",
+      "name": "Geriatric new confusion against documented oriented baseline",
+      "envelopes": ["geriatric"],
+      "condition": {"field": "new_confusion_vs_baseline", "op": "==", "value": true},
+      "floor_level": 2,
+      "source": "S6",
+      "citation_text": "Sepsis from a urinary source often presents as altered mental status in older adults; fever is frequently absent.",
+      "reason_string": "New confusion vs baseline",
+      "action_verb": "Sepsis screen, monitored area",
+      "adversarial_note": "Blueprint scenario S-14."
+    },
+    {
+      "rule_id": "RF-X01",
+      "name": "Communication barrier with no assessable self-report channel",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"all": [
+        {"field": "communication_barrier", "op": "==", "value": true},
+        {"field": "self_report_channel_available", "op": "==", "value": false}
+      ]},
+      "floor_level": 3,
+      "source": "ASM",
+      "citation_text": "Blueprint section 5 item 1 (MUST): 'The single most dangerous patient in any ED is the one who cannot tell you what is wrong.' Self-report is scored as ABSENT, not as negative findings. Uncertainty forced to BLIND; hard TTL floor <=10 min regardless of how stable the vitals look.",
+      "reason_string": "Cannot assess - no self-report",
+      "action_verb": "Direct observation now",
+      "forces_uncertainty_class": "BLIND",
+      "ttl_floor_minutes": 10
+    },
+    {
+      "rule_id": "RF-X02",
+      "name": "Unknown age",
+      "envelopes": ["unknown_age"],
+      "condition": {"field": "age_known", "op": "==", "value": false},
+      "floor_level": 3,
+      "source": "ASM",
+      "citation_text": "Blueprint 9.5 table B: unknown age is treated as maximal uncertainty rather than as an adult. Uncertainty class BLIND; union of adjacent plausible envelopes' escalation criteria; clock floored at 10 minutes.",
+      "reason_string": "Age unknown - conservative envelope",
+      "action_verb": "Establish age, reassess",
+      "forces_uncertainty_class": "BLIND",
+      "ttl_floor_minutes": 10
+    },
+    {
+      "rule_id": "RF-X03",
+      "name": "Decision-critical field never measured past threshold",
+      "envelopes": ["paediatric", "adult", "geriatric", "pregnancy", "unknown_age"],
+      "condition": {"all": [
+        {"field": "missing_critical1_count", "op": ">=", "value": 1},
+        {"field": "minutes_since_arrival", "op": ">=", "value": 15}
+      ]},
+      "floor_level": 3,
+      "source": "ASM",
+      "citation_text": "Blueprint Law 2 - unknown is not stable. Round 1's headline target, now measurable: count of patients past 15 min with unmeasured critical vitals. Blueprint complexity 5.",
+      "reason_string": "Critical vital never measured",
+      "action_verb": "Take the missing observation",
+      "escalate_only": true
+    }
+  ],
+  "time_critical_pathways": [
+    {
+      "pathway_id": "TCP-STROKE",
+      "name": "Acute ischaemic stroke - thrombolysis window",
+      "trigger_concepts": ["focal_weakness", "slurred_speech", "facial_droop", "sudden_visual_loss"],
+      "window_minutes": 270,
+      "extended_window_minutes": 540,
+      "thrombectomy_window_minutes": 1440,
+      "clock_runs_from": "stated_onset_time",
+      "source": "S13",
+      "citation_text": "Intravenous thrombolysis within the 4.5-hour window without advanced imaging selection; extended-window thrombolysis at 4.5-9 hours with advanced imaging criteria; endovascular thrombectomy for basilar artery occlusion within 24 hours.",
+      "required_capabilities": ["ct"],
+      "floor_level": 2,
+      "note": "Blueprint 5 item 6: the clock belongs to the disease, not the queue. Displayed independently of the TTL and outside the optimiser's authority. Blueprint scenario S-21 exists because NEWS2 here is close to zero."
+    },
+    {
+      "pathway_id": "TCP-STEMI",
+      "name": "Suspected acute coronary syndrome",
+      "trigger_concepts": ["chest_pain", "chest_discomfort", "epigastric_pain_with_cardiac_features", "indigestion_with_diaphoresis"],
+      "window_minutes": 120,
+      "clock_runs_from": "stated_onset_time",
+      "source": "ASM",
+      "citation_text": "Door-to-balloon urgency is standard practice; the 120-minute figure here is ASM as an attention window, not a treatment claim. Blueprint 5 item 6 names STEMI as a time-critical pathway.",
+      "required_capabilities": ["cath_lab"],
+      "floor_level": 2
+    },
+    {
+      "pathway_id": "TCP-SEPSIS",
+      "name": "Possible sepsis - antimicrobial window",
+      "trigger_concepts": ["fever_with_systemic_features", "confusion_with_infection_source", "unwell_with_derangement"],
+      "window_minutes": 180,
+      "window_minutes_with_shock": 60,
+      "clock_runs_from": "arrival_timestamp",
+      "source": "S14",
+      "citation_text": "Surviving Sepsis Campaign 2021: antimicrobials within 1 h for possible septic shock or high likelihood of sepsis, within 3 h for possible sepsis without shock.",
+      "required_capabilities": ["labs"],
+      "floor_level": 2
+    }
+  ],
+  "physiological_plausibility_bounds": {
+    "_comment": "Layer L0. Blueprint 5 item 4 (MUST): classifies every value as plausible / implausible / impossible PER AGE ENVELOPE. Impossible values are QUARANTINED, not deleted. An implausible-but-possible extreme is treated as real until re-measured.",
+    "source": "ASM",
+    "heart_rate": {
+      "impossible": {"min": 0, "max": 300},
+      "implausible": {"paediatric": {"min": 40, "max": 250}, "adult": {"min": 25, "max": 220}, "geriatric": {"min": 25, "max": 220}}
+    },
+    "respiratory_rate": {
+      "impossible": {"min": 0, "max": 100},
+      "implausible": {"paediatric": {"min": 10, "max": 80}, "adult": {"min": 4, "max": 60}, "geriatric": {"min": 4, "max": 60}}
+    },
+    "systolic_bp": {
+      "impossible": {"min": 1, "max": 300},
+      "implausible": {"paediatric": {"min": 50, "max": 180}, "adult": {"min": 50, "max": 260}, "geriatric": {"min": 50, "max": 260}}
+    },
+    "diastolic_bp": {
+      "impossible": {"min": 1, "max": 200},
+      "implausible": {"paediatric": {"min": 25, "max": 120}, "adult": {"min": 25, "max": 160}, "geriatric": {"min": 25, "max": 160}}
+    },
+    "spo2": {
+      "impossible": {"min": 30, "max": 100},
+      "implausible": {"paediatric": {"min": 70, "max": 100}, "adult": {"min": 60, "max": 100}, "geriatric": {"min": 60, "max": 100}}
+    },
+    "temperature_c": {
+      "impossible": {"min": 25.0, "max": 45.0},
+      "implausible": {"paediatric": {"min": 33.0, "max": 42.0}, "adult": {"min": 32.0, "max": 42.5}, "geriatric": {"min": 32.0, "max": 42.5}}
+    },
+    "blood_glucose_mgdl": {
+      "impossible": {"min": 5, "max": 1500},
+      "implausible": {"paediatric": {"min": 20, "max": 600}, "adult": {"min": 20, "max": 900}, "geriatric": {"min": 20, "max": 900}}
+    },
+    "gcs": {
+      "impossible": {"min": 3, "max": 15},
+      "implausible": {"paediatric": {"min": 3, "max": 15}, "adult": {"min": 3, "max": 15}, "geriatric": {"min": 3, "max": 15}}
+    },
+    "capillary_refill_seconds": {
+      "impossible": {"min": 0.0, "max": 30.0},
+      "implausible": {"paediatric": {"min": 0.5, "max": 10.0}, "adult": {"min": 0.5, "max": 10.0}, "geriatric": {"min": 0.5, "max": 10.0}}
+    },
+    "pain_score": {
+      "impossible": {"min": 0, "max": 10},
+      "implausible": {"paediatric": {"min": 0, "max": 10}, "adult": {"min": 0, "max": 10}, "geriatric": {"min": 0, "max": 10}}
+    }
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "_comment": "Master Blueprint Sources list. Every clinical threshold in this repository traces to an entry here (Blueprint 9.5 table A) or is labelled ASM (Blueprint 9.5 table B). Standing rule for the build team, Blueprint 9.5: no threshold enters the codebase because it sounded right.",
+  "schema_version": "1.0.0",
+  "sources": {
+    "S1": {
+      "ref": 1,
+      "title": "National Early Warning Score (NEWS) 2 - Standardising the assessment of acute-illness severity in the NHS",
+      "publisher": "Royal College of Physicians",
+      "url": "https://www.rcp.ac.uk/media/ctulqqbn/news2-executive-summary_0.pdf",
+      "used_for": "Adult aggregate scoring bands (respiration, SpO2 scales 1 and 2, supplemental oxygen, systolic BP, pulse, ACVPU, temperature); escalation thresholds (1-4 low; single parameter scoring 3; 5-6 medium; >=7 high) and monitoring frequencies; and the explicit statements that NEWS2 should not be used in children under 16 or in pregnancy, and may be unreliable in spinal-cord injury.",
+      "status": "established_guidance"
+    },
+    "S2": {
+      "ref": 2,
+      "title": "Evaluation of Version 4 of the Emergency Severity Index in US Emergency Departments for the Rate of Mistriage",
+      "publisher": "JAMA Network Open, 2023 (Sax DR et al.)",
+      "url": "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2802556",
+      "used_for": "5,315,176 ED encounters across 21 EDs; overall mistriage 32.2%; undertriage 3.3% (176,131); overtriage 28.9% (1,537,129); the intervention-based operational definition of undertriage adopted by ground-truth tier G3; demographic findings (Black patients 18.5% greater relative risk of undertriage; Black male patients 41.0% higher than White female patients).",
+      "status": "evidence"
+    },
+    "S3": {
+      "ref": 3,
+      "title": "Emergency department crowding increases 10-day mortality for non-critical patients: a retrospective observational study",
+      "publisher": "Internal and Emergency Medicine, 2023",
+      "url": "https://link.springer.com/article/10.1007/s11739-023-03392-8",
+      "used_for": "103,196 ED visits; ED occupancy ratio at arrival highest vs lowest quartile OR 1.31 (95% CI 1.07-1.61) for 10-day mortality; the 0.90 occupancy threshold adopted as the STRAINED-mode trigger.",
+      "status": "evidence"
+    },
+    "S4": {
+      "ref": 4,
+      "title": "External Validation of a Widely Implemented Proprietary Sepsis Prediction Model in Hospitalized Patients",
+      "publisher": "JAMA Internal Medicine, 2021 (Wong A et al.)",
+      "url": "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2781307",
+      "used_for": "AUC 0.63; sensitivity 33%; missed 67% of sepsis; alerted on 18% of 38,455 hospitalised patients. The canonical unbounded-alert failure and the design constraint behind the capped worklist (constraint C5).",
+      "status": "evidence"
+    },
+    "S5": {
+      "ref": 5,
+      "title": "Emergency Severity Index Handbook, 5th edition (ESI v5)",
+      "publisher": "Emergency Nurses Association, 2023",
+      "url": "https://californiaena.org/wp-content/uploads/2023/05/ESI-Handbook-5th-Edition-3-2023.pdf",
+      "used_for": "Four-decision-point algorithm; paediatric high-risk vital-sign thresholds by age band (decision point D5); adult thresholds HR>100, RR>20, SpO2<92%; paediatric fever rules.",
+      "status": "established_guidance"
+    },
+    "S6": {
+      "ref": 6,
+      "title": "Atypical Presentations of Critical Illness in Older Adults",
+      "publisher": "SAEM / CDEM M4 Geriatrics Curriculum",
+      "url": "https://www.saem.org/about-saem/academies-interest-groups-affiliates2/cdem/for-students/online-education/m4-curriculum/group-m4-geriatrics/atypical-presentations-of-critical-illness-in-older-adults",
+      "used_for": "Geriatric envelope modifiers: fever and leucocytosis frequently absent owing to immunosenescence; beta-blockers and calcium-channel blockers masking tachycardia; baseline hypertension concealing acute decompensation; urinary sepsis presenting as altered mental status; peritoneal signs often absent; STEMI without chest pain. Establishes DIRECTION of effect, not magnitude.",
+      "status": "established_teaching"
+    },
+    "S7": {
+      "ref": 7,
+      "title": "Digital Personal Data Protection Rules, 2025 (India), notified 14 November 2025",
+      "publisher": "Government of India",
+      "url": "https://dpdpa.com/dpdparules.html",
+      "used_for": "Rule 6 reasonable security safeguards (encryption/masking/tokenisation; access control; logs, monitoring and review; backups; one-year retention of logs and personal data); Rule 7 breach intimation (immediate intimation; detailed report to the Board within 72 hours); Rule 10 verifiable parental consent.",
+      "status": "regulation"
+    },
+    "S8": {
+      "ref": 8,
+      "title": "Digital Personal Data Protection Rules, 2025 - Rule 13 and Fourth Schedule",
+      "publisher": "Government of India",
+      "url": "https://dpdpa.com/dpdparules/rule13.html",
+      "used_for": "Rule 13(1)-(2) annual DPIA and independent audit for significant data fiduciaries; Rule 13(3) duty to observe due diligence to verify that algorithmic software is not likely to pose a risk to Data Principals' rights; Rule 13(4) localisation; Fourth Schedule Part A exemption for clinical establishments and healthcare professionals from children's-data consent requirements where processing is restricted to providing health services to the child.",
+      "status": "regulation"
+    },
+    "S9": {
+      "ref": 9,
+      "title": "AIIMS Triage Protocol (ATP)",
+      "publisher": "Journal of Emergencies, Trauma, and Shock, 2020",
+      "url": "https://indusem.org/wp-content/uploads/covid/ATP-AIIMS.pdf",
+      "used_for": "Three-tier Red/Yellow/Green colour-coded triage with corresponding physical ED zones; ~1.5 lakh annual ED patients at AIIMS New Delhi; the stated rationale that five-tier models were deliberately simplified because of limited numbers of trained emergency physicians. Basis of the configurable acuity vocabulary.",
+      "status": "established_practice"
+    },
+    "S10": {
+      "ref": 10,
+      "title": "Clinical Decision Support Software - final guidance (revised), issued 6 January 2026",
+      "publisher": "US Food and Drug Administration",
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software",
+      "used_for": "The four non-device CDS criteria, in particular the requirement that software enable a health-care professional to independently review the basis for its recommendations. The reason the basis view exists.",
+      "status": "regulation"
+    },
+    "S11": {
+      "ref": 11,
+      "title": "UK National Paediatric Early Warning System (PEWS)",
+      "publisher": "Royal College of Paediatrics and Child Health / NHS England",
+      "url": "https://www.rcpch.ac.uk/resources/UK-paediatric-early-warning-systems",
+      "used_for": "Scored parameter set (heart rate, respiratory rate, extent of respiratory distress, blood pressure, oxygen saturation, oxygen delivery, capillary refill); recorded-but-unscored parameters; four escalation levels; and the parent/carer concern trigger which escalates a child's care regardless of other assessments (imported as trigger T3).",
+      "status": "established_practice"
+    },
+    "S12": {
+      "ref": 12,
+      "title": "Triage systems in low-resource emergency care settings",
+      "publisher": "Bulletin of the World Health Organization",
+      "url": "https://cdn.who.int/media/docs/default-source/bulletin/online-first/blt.23.290863.pdf",
+      "used_for": "Interagency Integrated Triage Tool (WHO/MSF/ICRC) three-tier colour-coded instrument; sensitivity 70.0-77.8% for time-critical illness; inter-rater agreement kappa > 0.8; median triage times 94-214 seconds; the call for stepped-wedge evaluation of structured triage.",
+      "status": "evidence"
+    },
+    "S13": {
+      "ref": 13,
+      "title": "2026 Guideline for the Early Management of Patients With Acute Ischemic Stroke",
+      "publisher": "American Heart Association / American Stroke Association",
+      "url": "https://professional.heart.org/en/science-news/2026-guideline-for-the-early-management-of-patients-with-acute-ischemic-stroke/top-things-to-know",
+      "used_for": "Time-critical pathway clocks: intravenous thrombolysis within the 4.5-hour window without advanced imaging selection; extended-window thrombolysis at 4.5-9 hours with advanced imaging criteria; endovascular thrombectomy for basilar artery occlusion within 24 hours.",
+      "status": "established_guidance"
+    },
+    "S14": {
+      "ref": 14,
+      "title": "Surviving Sepsis Campaign: International Guidelines for Management of Sepsis and Septic Shock 2021",
+      "publisher": "Intensive Care Medicine",
+      "url": "https://link.springer.com/article/10.1007/s00134-021-06506-y",
+      "used_for": "Recommendation against qSOFA as a single screening tool compared with SIRS, NEWS or MEWS (strong recommendation, moderate-quality evidence); antimicrobial timing - within 1 hour for possible septic shock, within 3 hours for possible sepsis without shock.",
+      "status": "established_guidance"
+    },
+    "S15": {
+      "ref": 15,
+      "title": "Strategies to Combat Overcrowding at Emergency Departments across India",
+      "publisher": "Academic College of Emergency Experts India / WHO Collaborating Centre for Emergency and Trauma, South-East Asia. Journal of Emergencies, Trauma, and Shock",
+      "url": "https://journals.lww.com/onlinejets/",
+      "used_for": "~40% of Indian ED presentations manageable at primary-care level (basis of the low-acuity-heavy distribution); documented shortage of certified emergency physicians; observation that Indian EDs frequently lack standardised triage protocols.",
+      "status": "evidence"
+    },
+    "S16": {
+      "ref": 16,
+      "title": "FHIR Implementation Guide for ABDM (Ayushman Bharat Digital Mission)",
+      "publisher": "National Resource Centre for EHR Standards (NRCeS)",
+      "url": "https://nrces.in/ndhm/fhir/r4/",
+      "used_for": "India's standardisation on FHIR R4; profiled resources (Patient, Practitioner, Organization, Encounter, Observation including vitals variants, Condition, AllergyIntolerance, DocumentReference); the Wellness Record carrying vitals. The target shape of integration tier L3.",
+      "status": "standard"
+    },
+    "S17": {
+      "ref": 17,
+      "title": "Canadian Triage and Acuity Scale (CTAS) - participant manual",
+      "publisher": "CTAS / Canadian Association of Emergency Physicians",
+      "url": "https://ctas-phctas.ca/wp-content/uploads/2018/05/participant_manual_v2.5b_november_2013_0.pdf",
+      "used_for": "Five acuity levels and, critically, the MANDATORY REASSESSMENT INTERVALS for waiting patients - level 1 continuous, level 2 every 15 minutes, level 3 every 30, level 4 every 60, level 5 every 120. These are the published protocol floors the TTL system may shorten and never lengthen. The single most important external anchor in the design.",
+      "status": "established_guidance"
+    },
+    "S18": {
+      "ref": 18,
+      "title": "Automation bias in electronic prescribing",
+      "publisher": "BMC Medical Informatics and Decision Making, 2017 (Lyell D et al.)",
+      "url": "https://link.springer.com/article/10.1186/s12911-017-0425-5",
+      "used_for": "Incorrect decision support increased omission errors by 28.7%; false-positive alerts increased commission errors by 56.9%; neither task interruption nor task complexity mitigated the effect. Empirical basis for the automation-bias probe.",
+      "status": "evidence"
+    },
+    "S19": {
+      "ref": 19,
+      "title": "CDSCO guidance on medical device software (India), issued 30 July 2026",
+      "publisher": "Central Drugs Standard Control Organisation",
+      "url": "https://cdsco.gov.in/",
+      "used_for": "Definition of medical device software and Class A-D risk classification under the Medical Devices Rules 2017; expectations for AI-enabled medical device software including disclosure of training-dataset demographic and geographic distribution, model bias analysis, generalisability data, and whether datasets are real-world or synthetic.",
+      "status": "regulation"
+    },
+    "S20": {
+      "ref": 20,
+      "title": "MIMIC-IV-ED v2.2",
+      "publisher": "PhysioNet",
+      "url": "https://physionet.org/content/mimic-iv-ed/2.2/",
+      "used_for": "The retrospective-replay validation route (Blueprint 18.4). ~425,000 ED stays with a triage table containing vital signs, pain score, chief complaint and acuity; access requires credentialed status, human-subjects research training and a signed data use agreement - infeasible inside a one-week build, named as the next step. EXPLICITLY OUT OF SCOPE for this prototype.",
+      "status": "future_validation"
+    },
+    "ASM": {
+      "ref": null,
+      "title": "Team DataBrix stated assumption",
+      "publisher": "PatientTriage.ai Round 2 Master Blueprint, section 9.5 table B and section 7",
+      "url": null,
+      "used_for": "Any threshold or behaviour we chose ourselves because no authoritative source establishes it. Every ASM-tagged value in this repository is a decision we can defend, not a number we found.",
+      "status": "assumption"
+    }
+  }
+}
